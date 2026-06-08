@@ -1,0 +1,544 @@
+{
+  "repo": "/Users/tek/Projects/cc-gradient-statusline",
+  "n_features": 4,
+  "feature_tokens": [
+    13527,
+    6823,
+    9367,
+    3614
+  ],
+  "strategies": [
+    {
+      "name": "Full (no compaction)",
+      "peaks": [
+        13543,
+        20366,
+        29733,
+        33347
+      ],
+      "rests": [
+        13543,
+        20366,
+        29733,
+        33347
+      ],
+      "peak_max": 33347,
+      "final_rest": 33347,
+      "retention": [
+        {
+          "id": "oauth_endpoint",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The status line fetches account usage from `https://api.anthropic.com/api/oauth/usage` via a GET request with an OAuth bearer token."
+        },
+        {
+          "id": "stdin_rejected",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The per-session stdin rate_limits snapshot was rejected because it was frozen at each session's start time, causing different sessions to display different 5h/7d percentages; the shared cache ensures all sessions show identical account-glob"
+        },
+        {
+          "id": "ps_a_slow",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The command `ps -A` was found to take seconds on a busy process table and was avoided in favor of targeted per-pid queries like `ps -p PID` which run in ~10ms."
+        },
+        {
+          "id": "shed_order",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "In the responsive layout, detail is dropped in this priority order as the pane narrows: model name \u2192 context window \u2192 countdowns \u2192 bars \u2192 5h/7d labels, with the percentages always surviving."
+        },
+        {
+          "id": "width_ancestor",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The status-line process has no tty of its own\u2014its stdin/stdout are pipes\u2014so it must read the winsize of its parent process's (Claude Code's) controlling tty to determine the actual terminal width."
+        },
+        {
+          "id": "visible_len",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The function is named `visible_len`, which strips ANSI escape sequences and returns the visible character count of a string."
+        },
+        {
+          "id": "time_hooks",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The two hook events are **UserPromptSubmit** (runs `inject-date.sh` to inject the date at the start of every turn) and **PostToolUse** (runs `inject-time.sh` to refresh the time during long tasks, throttled to once per minute)."
+        },
+        {
+          "id": "throttle_default",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The default throttle interval is 60 seconds, overridden by the `CC_TIME_INTERVAL` environment variable (see `inject-time.sh`: `INTERVAL=\"${CC_TIME_INTERVAL:-60}\"`)."
+        },
+        {
+          "id": "pill_bg",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The dark 'pill' background RGB color is (22, 23, 30), defined in statusline.py as the \"dark island\" shown when THEME == \"pill\"."
+        },
+        {
+          "id": "theme_default",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The default theme is \"pill,\" which renders a bright neon palette on a dark background that lets the neon colors pop against a cream terminal."
+        },
+        {
+          "id": "gradient_high",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "At high utilization (position 1.0), the gradient bar reaches dark blood red (140, 16, 22) in light theme or bright red (255, 60, 60) in dark theme, as defined in the `STOPS_LIGHT` and `STOPS_DARK` color palettes."
+        },
+        {
+          "id": "cache_consistency",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "All sessions display the same numbers simultaneously, rather than disagreeing across sessions with stale per-session snapshots."
+        },
+        {
+          "id": "refresh_interval",
+          "feature": 1,
+          "correct": false,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT"
+        },
+        {
+          "id": "bg_rearm",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 33347,
+          "retrieval_tokens": 0,
+          "answer": "The `with_background` function replaces every ANSI reset code (`\\033[0m`) with the reset followed immediately by the background color code (`BGCODE`), so the background is re-armed after each foreground reset and doesn't punch holes in the "
+        }
+      ],
+      "retention_rate": 0.9285714285714286,
+      "mean_answer_ctx": 33347
+    },
+    {
+      "name": "Truncate (last 8k tok)",
+      "peaks": [
+        8016,
+        8016,
+        8016,
+        8016
+      ],
+      "rests": [
+        8016,
+        8016,
+        8016,
+        8016
+      ],
+      "peak_max": 8016,
+      "final_rest": 8016,
+      "retention": [
+        {
+          "id": "oauth_endpoint",
+          "feature": 1,
+          "correct": false,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe provided code shows that usage comes from either a cached source (`cached_usage()`) or stdin payload (`usage_from_payload()`), but the `cached_usage()` function implementation\u2014which would contain any HTTP endpoint detail"
+        },
+        {
+          "id": "stdin_rejected",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "Because the rate limits are account-global\u2014the same numbers in every session\u2014so a shared cache provides one authoritative source rather than redundant per-session copies."
+        },
+        {
+          "id": "ps_a_slow",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "`ps -A` (the whole process table) was found to take seconds on a busy machine and had to be avoided in favor of targeted per-pid queries with `ps -p PID`."
+        },
+        {
+          "id": "shed_order",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "Detail is shed in priority order: model name \u2192 context window \u2192 countdowns \u2192 bars \u2192 5h/7d labels, with percentages surviving longest."
+        },
+        {
+          "id": "width_ancestor",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "The status-line process has no tty of its own because its stdin/stdout are pipes, so it must read an ancestor process's tty to access the terminal width."
+        },
+        {
+          "id": "visible_len",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "The function is `visible_len`, which strips ANSI escape sequences and returns the on-screen character count."
+        },
+        {
+          "id": "time_hooks",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "The two hook events are **UserPromptSubmit** (which runs `inject-date.sh` to inject the date at the start of every turn) and **PostToolUse** (which runs `inject-time.sh` to refresh the time during long tasks, throttled to ~once per minute)."
+        },
+        {
+          "id": "throttle_default",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "The default throttle interval for the time-injection hook is 60 seconds, overridden by the `CC_TIME_INTERVAL` environment variable."
+        },
+        {
+          "id": "pill_bg",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe provided code excerpt focuses on the responsive layout tier system and time-injection hooks added in feature 3, but doesn't include the color definitions or theme styling for the pill background."
+        },
+        {
+          "id": "theme_default",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe working context mentions that themes can be set via `CC_STATUSLINE_THEME=pill|light|dark` but does not specify which is the default or what any specific theme does."
+        },
+        {
+          "id": "gradient_high",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "At high utilization near the limit, the gradient bar reaches **red** (specifically, a red-dominant color as confirmed by the test checking that the red channel exceeds green and blue channels at 98% utilization)."
+        },
+        {
+          "id": "cache_consistency",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "Using a shared cache file provides account-global usage that shows the same numbers across every Claude session."
+        },
+        {
+          "id": "refresh_interval",
+          "feature": 1,
+          "correct": false,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe provided code shows `REFRESH_INTERVAL = 1.0` as a hardcoded constant in `statusline.py`, but no environment variable or configurable setting is documented to control it."
+        },
+        {
+          "id": "bg_rearm",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 8016,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe `with_background()` function that wraps the final line is called but not defined in the provided code excerpt, so I cannot see the mechanism for preserving background color across ANSI resets."
+        }
+      ],
+      "retention_rate": 0.6428571428571429,
+      "mean_answer_ctx": 8016
+    },
+    {
+      "name": "RollingSummary (budget 6k)",
+      "peaks": [
+        13543,
+        7436,
+        10000,
+        4440
+      ],
+      "rests": [
+        613,
+        633,
+        826,
+        4440
+      ],
+      "peak_max": 13543,
+      "final_rest": 4440,
+      "retention": [
+        {
+          "id": "oauth_endpoint",
+          "feature": 1,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe working context describes the cache mechanism (`~/.cache/cc-gradient-usage.json`), OAuth token sources, and the refresh process (`--refresh-usage`), but does not specify the actual HTTP endpoint URL that the status line "
+        },
+        {
+          "id": "stdin_rejected",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "Shared cache ensures all Claude Code sessions show identical rate-limit state at any moment, whereas per-session stdin snapshots would diverge and create inconsistent displays across parallel sessions."
+        },
+        {
+          "id": "ps_a_slow",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "`ps -A` was found to be slow (avoided in favor of targeted `ps -p PID` queries, which take ~10ms)."
+        },
+        {
+          "id": "shed_order",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "Detail is dropped in this priority order: model \u2192 context window \u2192 countdowns \u2192 bars \u2192 labels, with percentages always remaining."
+        },
+        {
+          "id": "width_ancestor",
+          "feature": 2,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe context describes *how* the statusline finds width (walks parent process chain, finds Claude Code's controlling pty, reads via TIOCGWINSZ), but doesn't explicitly state *why* it must read an ancestor's tty rather than it"
+        },
+        {
+          "id": "visible_len",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "The function is `visible_len()`, which measures on-screen width by ignoring ANSI color codes."
+        },
+        {
+          "id": "time_hooks",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "UserPromptSubmit runs `inject-date.sh` to inject the current date at the start of every turn, and PostToolUse runs `inject-time.sh` to refresh the time during long tasks (throttled to ~once per minute)."
+        },
+        {
+          "id": "throttle_default",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "The default throttle interval is 60 seconds, overridden by the `CC_TIME_INTERVAL` environment variable."
+        },
+        {
+          "id": "pill_bg",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT"
+        },
+        {
+          "id": "theme_default",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT"
+        },
+        {
+          "id": "gradient_high",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT"
+        },
+        {
+          "id": "cache_consistency",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "Shared cache sourcing ensures **all sessions display identical usage statistics** (\"Shared cache (not stdin) is source of truth\u2014all sessions identical\")."
+        },
+        {
+          "id": "refresh_interval",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "`CC_CACHE_TTL` controls the cache refresh frequency in seconds (default 15s); set it to 1 to run every second."
+        },
+        {
+          "id": "bg_rearm",
+          "feature": 0,
+          "correct": false,
+          "answer_ctx_tokens": 4440,
+          "retrieval_tokens": 0,
+          "answer": "NOT IN CONTEXT\n\nThe provided context includes the installation scripts and optional time-hook features, but not the `statusline.py` implementation details that would explain the ANSI reset handling for the pill's background color."
+        }
+      ],
+      "retention_rate": 0.5714285714285714,
+      "mean_answer_ctx": 4440
+    },
+    {
+      "name": "Ledger (ours)",
+      "peaks": [
+        13550,
+        7109,
+        9915,
+        4525
+      ],
+      "rests": [
+        286,
+        548,
+        911,
+        1223
+      ],
+      "peak_max": 13550,
+      "final_rest": 1223,
+      "retention": [
+        {
+          "id": "oauth_endpoint",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "The status line fetches account usage from the Anthropic OAuth endpoint `https://api.anthropic.com/api/oauth/usage` via a GET request with a Bearer token authorization header."
+        },
+        {
+          "id": "stdin_rejected",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 3438,
+          "retrieval_tokens": 2207,
+          "answer": "The stdin rate_limits payload is a per-session snapshot frozen at that session's last API call, which made the limits disagree across sessions\u2014the shared cache ensures every session displays the same account-global numbers."
+        },
+        {
+          "id": "ps_a_slow",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 3438,
+          "retrieval_tokens": 2207,
+          "answer": "The `ps -A` command was found to take seconds on a busy process table and had to be avoided in favor of a targeted ps walk."
+        },
+        {
+          "id": "shed_order",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4794,
+          "retrieval_tokens": 3563,
+          "answer": "In the responsive layout, detail is dropped in this priority order as the pane narrows: model name \u2192 ctx% \u2192 reset countdowns \u2192 bars \u2192 5h/7d labels, ensuring the percentages always survive."
+        },
+        {
+          "id": "width_ancestor",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4794,
+          "retrieval_tokens": 3563,
+          "answer": "The status-line process has no tty of its own\u2014its stdin/stdout are pipes\u2014so it must read the controlling tty from an ancestor process (Claude Code, its parent) to get the live pane width."
+        },
+        {
+          "id": "visible_len",
+          "feature": 2,
+          "correct": true,
+          "answer_ctx_tokens": 4794,
+          "retrieval_tokens": 3563,
+          "answer": "The function is `visible_len`, which strips ANSI escape sequences and counts the visible character width of a string."
+        },
+        {
+          "id": "time_hooks",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 3600,
+          "retrieval_tokens": 2369,
+          "answer": "The two hook events are **UserPromptSubmit** (runs `hooks/inject-date.sh` to inject the date at the start of each turn) and **PostToolUse** (runs `hooks/inject-time.sh` to refresh the time during long tasks, throttled to one injection per 6"
+        },
+        {
+          "id": "throttle_default",
+          "feature": 3,
+          "correct": true,
+          "answer_ctx_tokens": 3600,
+          "retrieval_tokens": 2369,
+          "answer": "The default throttle interval for the time-injection hook is 60 seconds, overridden by the `CC_TIME_INTERVAL` environment variable."
+        },
+        {
+          "id": "pill_bg",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "The dark 'pill' background is RGB (22, 23, 30), defined in `statusline.py` as `BG_FILL = (22, 23, 30) if THEME == \"pill\" else None`."
+        },
+        {
+          "id": "theme_default",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "The default theme is \"pill,\" which uses a bright neon palette on a dark background pill to make the neon colors pop on a cream-colored terminal."
+        },
+        {
+          "id": "gradient_high",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "At high utilization near the limit, the gradient bar reaches red\u2014dark blood red for the light theme or bright red (#FF3C3C) for the dark theme."
+        },
+        {
+          "id": "cache_consistency",
+          "feature": 1,
+          "correct": true,
+          "answer_ctx_tokens": 3438,
+          "retrieval_tokens": 2207,
+          "answer": "Sourcing usage from one shared cache file ensures that every session shows identical numbers, rather than having each session display its own per-session snapshot that would disagree across sessions."
+        },
+        {
+          "id": "refresh_interval",
+          "feature": 1,
+          "correct": false,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "NOT IN CONTEXT"
+        },
+        {
+          "id": "bg_rearm",
+          "feature": 0,
+          "correct": true,
+          "answer_ctx_tokens": 9643,
+          "retrieval_tokens": 8412,
+          "answer": "The `with_background()` function re-arms the background color code after every ANSI reset by replacing `\\033[0m` with `\\033[0m` + `BGCODE`, ensuring the pill background survives foreground-only resets."
+        }
+      ],
+      "retention_rate": 0.9285714285714286,
+      "mean_answer_ctx": 6411
+    }
+  ]
+}

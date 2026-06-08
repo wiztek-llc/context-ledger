@@ -1,0 +1,77 @@
+session: 4 features from /Users/tek/Projects/cc-gradient-statusline
+
+=== Full (no compaction) ===
+  peak_max=33,347  final_rest=33,347
+  [PASS] oauth_endpoint     ctx=33,347  'The status line fetches account usage from `https://api.anthropic.com/'
+  [PASS] stdin_rejected     ctx=33,347  'The per-session stdin rate_limits snapshot was rejected because it was'
+  [PASS] ps_a_slow          ctx=33,347  'The command `ps -A` was found to take seconds on a busy process table '
+  [PASS] shed_order         ctx=33,347  'In the responsive layout, detail is dropped in this priority order as '
+  [PASS] width_ancestor     ctx=33,347  'The status-line process has no tty of its own—its stdin/stdout are pip'
+  [PASS] visible_len        ctx=33,347  'The function is named `visible_len`, which strips ANSI escape sequence'
+  [PASS] time_hooks         ctx=33,347  'The two hook events are **UserPromptSubmit** (runs `inject-date.sh` to'
+  [PASS] throttle_default   ctx=33,347  'The default throttle interval is 60 seconds, overridden by the `CC_TIM'
+  [PASS] pill_bg            ctx=33,347  "The dark 'pill' background RGB color is (22, 23, 30), defined in statu"
+  [PASS] theme_default      ctx=33,347  'The default theme is "pill," which renders a bright neon palette on a '
+  [PASS] gradient_high      ctx=33,347  'At high utilization (position 1.0), the gradient bar reaches dark bloo'
+  [PASS] cache_consistency  ctx=33,347  'All sessions display the same numbers simultaneously, rather than disa'
+  [FAIL] refresh_interval   ctx=33,347  'NOT IN CONTEXT'
+  [PASS] bg_rearm           ctx=33,347  'The `with_background` function replaces every ANSI reset code (`\\033[0'
+  RETENTION = 13/14 = 93%  mean answer ctx = 33,347 tok
+
+=== Truncate (last 8k tok) ===
+  peak_max=8,016  final_rest=8,016
+  [FAIL] oauth_endpoint     ctx= 8,016  'NOT IN CONTEXT\n\nThe provided code shows that usage comes from either a'
+  [PASS] stdin_rejected     ctx= 8,016  'Because the rate limits are account-global—the same numbers in every s'
+  [PASS] ps_a_slow          ctx= 8,016  '`ps -A` (the whole process table) was found to take seconds on a busy '
+  [PASS] shed_order         ctx= 8,016  'Detail is shed in priority order: model name → context window → countd'
+  [PASS] width_ancestor     ctx= 8,016  'The status-line process has no tty of its own because its stdin/stdout'
+  [PASS] visible_len        ctx= 8,016  'The function is `visible_len`, which strips ANSI escape sequences and '
+  [PASS] time_hooks         ctx= 8,016  'The two hook events are **UserPromptSubmit** (which runs `inject-date.'
+  [PASS] throttle_default   ctx= 8,016  'The default throttle interval for the time-injection hook is 60 second'
+  [FAIL] pill_bg            ctx= 8,016  'NOT IN CONTEXT\n\nThe provided code excerpt focuses on the responsive la'
+  [FAIL] theme_default      ctx= 8,016  'NOT IN CONTEXT\n\nThe working context mentions that themes can be set vi'
+  [PASS] gradient_high      ctx= 8,016  'At high utilization near the limit, the gradient bar reaches **red** ('
+  [PASS] cache_consistency  ctx= 8,016  'Using a shared cache file provides account-global usage that shows the'
+  [FAIL] refresh_interval   ctx= 8,016  'NOT IN CONTEXT\n\nThe provided code shows `REFRESH_INTERVAL = 1.0` as a '
+  [FAIL] bg_rearm           ctx= 8,016  'NOT IN CONTEXT\n\nThe `with_background()` function that wraps the final '
+  RETENTION = 9/14 = 64%  mean answer ctx = 8,016 tok
+
+=== RollingSummary (budget 6k) ===
+  peak_max=13,543  final_rest=4,440
+  [FAIL] oauth_endpoint     ctx= 4,440  'NOT IN CONTEXT\n\nThe working context describes the cache mechanism (`~/'
+  [PASS] stdin_rejected     ctx= 4,440  'Shared cache ensures all Claude Code sessions show identical rate-limi'
+  [PASS] ps_a_slow          ctx= 4,440  '`ps -A` was found to be slow (avoided in favor of targeted `ps -p PID`'
+  [PASS] shed_order         ctx= 4,440  'Detail is dropped in this priority order: model → context window → cou'
+  [FAIL] width_ancestor     ctx= 4,440  'NOT IN CONTEXT\n\nThe context describes *how* the statusline finds width'
+  [PASS] visible_len        ctx= 4,440  'The function is `visible_len()`, which measures on-screen width by ign'
+  [PASS] time_hooks         ctx= 4,440  'UserPromptSubmit runs `inject-date.sh` to inject the current date at t'
+  [PASS] throttle_default   ctx= 4,440  'The default throttle interval is 60 seconds, overridden by the `CC_TIM'
+  [FAIL] pill_bg            ctx= 4,440  'NOT IN CONTEXT'
+  [FAIL] theme_default      ctx= 4,440  'NOT IN CONTEXT'
+  [FAIL] gradient_high      ctx= 4,440  'NOT IN CONTEXT'
+  [PASS] cache_consistency  ctx= 4,440  'Shared cache sourcing ensures **all sessions display identical usage s'
+  [PASS] refresh_interval   ctx= 4,440  '`CC_CACHE_TTL` controls the cache refresh frequency in seconds (defaul'
+  [FAIL] bg_rearm           ctx= 4,440  'NOT IN CONTEXT\n\nThe provided context includes the installation scripts'
+  RETENTION = 8/14 = 57%  mean answer ctx = 4,440 tok
+
+=== Ledger (ours) ===
+  peak_max=13,550  final_rest=1,223
+  [PASS] oauth_endpoint     ctx= 9,643  'The status line fetches account usage from the Anthropic OAuth endpoin'
+  [PASS] stdin_rejected     ctx= 3,438  'The stdin rate_limits payload is a per-session snapshot frozen at that'
+  [PASS] ps_a_slow          ctx= 3,438  'The `ps -A` command was found to take seconds on a busy process table '
+  [PASS] shed_order         ctx= 4,794  'In the responsive layout, detail is dropped in this priority order as '
+  [PASS] width_ancestor     ctx= 4,794  'The status-line process has no tty of its own—its stdin/stdout are pip'
+  [PASS] visible_len        ctx= 4,794  'The function is `visible_len`, which strips ANSI escape sequences and '
+  [PASS] time_hooks         ctx= 3,600  'The two hook events are **UserPromptSubmit** (runs `hooks/inject-date.'
+  [PASS] throttle_default   ctx= 3,600  'The default throttle interval for the time-injection hook is 60 second'
+  [PASS] pill_bg            ctx= 9,643  "The dark 'pill' background is RGB (22, 23, 30), defined in `statusline"
+  [PASS] theme_default      ctx= 9,643  'The default theme is "pill," which uses a bright neon palette on a dar'
+  [PASS] gradient_high      ctx= 9,643  'At high utilization near the limit, the gradient bar reaches red—dark '
+  [PASS] cache_consistency  ctx= 3,438  'Sourcing usage from one shared cache file ensures that every session s'
+  [FAIL] refresh_interval   ctx= 9,643  'NOT IN CONTEXT'
+  [PASS] bg_rearm           ctx= 9,643  'The `with_background()` function re-arms the background color code aft'
+  RETENTION = 13/14 = 93%  mean answer ctx = 6,411 tok
+
+LLM cache: {'entries': 59}
+wrote artifacts/results.json
+benchmark wall time: 669s
