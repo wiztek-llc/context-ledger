@@ -8,9 +8,21 @@ Dependency-free (git + stdlib). Locates `ctxledger` on PATH or next to itself.
 """
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
+
+
+def repo_from(cmd, cwd):
+    """Prefer an explicit `git -C <path>`; else the tool's cwd."""
+    try:
+        toks = shlex.split(cmd)
+        if "-C" in toks:
+            return os.path.expanduser(toks[toks.index("-C") + 1])
+    except Exception:
+        pass
+    return cwd
 
 
 def main():
@@ -26,7 +38,7 @@ def main():
     if any(w in resp for w in ("nothing to commit", "error", "failed", "fatal")):
         return
 
-    cwd = data.get("cwd") or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+    cwd = repo_from(cmd, data.get("cwd") or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
     ctx = shutil.which("ctxledger") or os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "ctxledger")
     try:
