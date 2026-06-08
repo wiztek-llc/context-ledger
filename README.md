@@ -97,6 +97,7 @@ The CLI works standalone too:
 
 ```bash
 ctxledger doctor                 # is it wired up here? what's recorded? what to do next
+ctxledger install-git-hook       # bulletproof: record EVERY commit (make/deploy/IDE), not just `git commit`
 ctxledger record                 # extract HEAD commit → append a ledger entry
 ctxledger show                   # print the project ledger
 ctxledger rehydrate <sha> [path] # recover exact evicted detail from git

@@ -173,8 +173,17 @@ def cmd_doctor(a):
         inject_hook = any("ledger-inject" in c for c in cmds)
     except Exception:
         pass
-    print(f"  [{ok(commit_hook)}] commit hook         records a ledger entry after every `git commit`")
+    print(f"  [{ok(commit_hook)}] commit hook         records when a Bash `git commit` is seen")
     print(f"  [{ok(inject_hook)}] session hook        re-injects the ledger at session start")
+    githook = False
+    if is_git:
+        hp = git(repo, "rev-parse", "--git-path", "hooks").strip()
+        if hp and not os.path.isabs(hp):
+            hp = os.path.join(top, hp)
+        pc = os.path.join(hp, "post-commit") if hp else ""
+        githook = bool(pc) and os.path.isfile(pc) and "context-ledger" in open(pc).read()
+    star = lambda b: "\033[32m ok \033[0m" if b else " ·· "
+    print(f"  [{star(githook)}] git post-commit     records EVERY commit (even via make/deploy/IDE)")
 
     ledger = default_ledger(repo)
     n = open(ledger).read().count("[commit ") if os.path.isfile(ledger) else 0
@@ -208,9 +217,40 @@ def cmd_doctor(a):
         print(f"    Ledger: {ledger}")
         print(f"    The status line shows '⊟ {_human(saved)} ctx saved' when Claude Code")
         print(f"    runs in this project (it reads {os.path.relpath(stats, top or repo)}).")
+    if is_git and not githook:
+        print("\n  Tip: for bulletproof recording (commits via make/deploy/IDE, not just")
+        print("  `git commit`), run:  ctxledger install-git-hook")
     if commit_hook:
-        print("\n  Note: hooks load at SESSION START. If you installed them while this")
-        print("  session was already open, restart it once so the commit hook is active.")
+        print("\n  Note: the Claude Code hooks load at SESSION START. If you installed them")
+        print("  while this session was already open, restart it once to activate them.")
+
+
+def cmd_install_git_hook(a):
+    """Install a git post-commit hook so EVERY commit records — regardless of how
+    it's made (git, make ship, deploy.sh, IDE). Idempotent; preserves any
+    existing post-commit hook."""
+    repo = a.repo or default_repo()
+    hooks_dir = git(repo, "rev-parse", "--git-path", "hooks").strip()
+    if not hooks_dir:
+        print("✗ not a git repo"); return
+    if not os.path.isabs(hooks_dir):
+        hooks_dir = os.path.join(_toplevel(repo), hooks_dir)
+    os.makedirs(hooks_dir, exist_ok=True)
+    path = os.path.join(hooks_dir, "post-commit")
+    cli = os.path.abspath(sys.argv[0])
+    block = ('\n# >>> context-ledger >>>\n'
+             f'"{cli}" record --repo "$(git rev-parse --show-toplevel 2>/dev/null)" '
+             '>/dev/null 2>&1 || true\n# <<< context-ledger <<<\n')
+    existing = open(path).read() if os.path.isfile(path) else ""
+    if "context-ledger" in existing:
+        print(f"✓ git post-commit hook already installed ({path})"); return
+    with open(path, "a" if existing else "w") as f:
+        if not existing:
+            f.write("#!/bin/sh\n")
+        f.write(block)
+    os.chmod(path, 0o755)
+    print(f"✓ git post-commit hook installed → {path}")
+    print("  Every commit in this repo now records to the ledger automatically.")
 
 
 def cmd_stats(a):
@@ -228,13 +268,14 @@ def cmd_stats(a):
 def main():
     p = argparse.ArgumentParser(prog="ctxledger")
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name in ("record", "show", "stats", "doctor"):
+    for name in ("record", "show", "stats", "doctor", "install-git-hook"):
         s = sub.add_parser(name); s.add_argument("--repo"); s.add_argument("--ledger")
     r = sub.add_parser("rehydrate"); r.add_argument("ref"); r.add_argument("path", nargs="?")
     r.add_argument("--repo"); r.add_argument("--ledger")
     a = p.parse_args()
     {"record": cmd_record, "show": cmd_show, "rehydrate": cmd_rehydrate,
-     "stats": cmd_stats, "doctor": cmd_doctor}[a.cmd](a)
+     "stats": cmd_stats, "doctor": cmd_doctor,
+     "install-git-hook": cmd_install_git_hook}[a.cmd](a)
 
 
 if __name__ == "__main__":
