@@ -12,10 +12,21 @@ The ledger file is the DURABLE, restorable memory: compact structured entries
 compaction. Default ledger: $CLAUDE_PROJECT_DIR/.claude/context-ledger.md
 """
 import argparse
+import json
 import os
 import re
 import subprocess
 import sys
+
+# source extensions whose full content an agent would hold in context while
+# building (mirrors the benchmark's build-context model); docs excluded.
+_SRC = (".py", ".sh", ".json", ".js", ".ts", ".tsx", ".jsx", ".go", ".rs",
+        ".c", ".h", ".cpp", ".java", ".rb", ".swift", ".kt", ".php", ".css")
+
+
+def _est_tokens(text):
+    """Dependency-free token estimate (~4 chars/token) for the live display."""
+    return max(0, round(len(text) / 4))
 
 _SIG = re.compile(r"^\+\s*((?:def|class|async def)\s+[A-Za-z_]\w*\s*\([^)]*\)"
                   r"|[A-Z_][A-Z0-9_]+\s*=)", re.M)
@@ -69,6 +80,36 @@ def entry_for(repo, ref="HEAD"):
     )
 
 
+def raw_context_tokens(repo, sha):
+    """Estimate the raw build-context tokens this commit would otherwise occupy:
+    commit message + diff + the full content of the changed source files read."""
+    subject = git(repo, "show", "-s", "--format=%s", sha)
+    body = git(repo, "show", "-s", "--format=%b", sha)
+    diff = git(repo, "show", "--format=", sha)
+    files = [f for f in git(repo, "show", "--name-only", "--format=", sha).split("\n")
+             if f.strip() and f.endswith(_SRC)]
+    text = subject + body + diff
+    for p in files[:12]:
+        text += git(repo, "show", f"{sha}:{p}")
+    return _est_tokens(text)
+
+
+def update_stats(repo, raw, entry):
+    path = os.path.join(_toplevel(repo), ".claude", "context-ledger.stats.json")
+    s = {"features": 0, "raw_tokens": 0, "entry_tokens": 0, "saved_tokens": 0}
+    if os.path.isfile(path):
+        try:
+            s.update(json.load(open(path)))
+        except Exception:
+            pass
+    s["features"] += 1
+    s["raw_tokens"] += raw
+    s["entry_tokens"] += entry
+    s["saved_tokens"] = s["raw_tokens"] - s["entry_tokens"]
+    json.dump(s, open(path, "w"))
+    return s
+
+
 def cmd_record(a):
     repo = a.repo or default_repo()
     ledger = a.ledger or default_ledger(repo)
@@ -87,6 +128,8 @@ def cmd_record(a):
         if header:
             f.write(header)
         f.write(e + "\n")
+    raw = raw_context_tokens(repo, sha)
+    update_stats(repo, raw, _est_tokens(e))
     sys.stdout.write(e)
 
 
@@ -102,11 +145,15 @@ def cmd_rehydrate(a):
 
 
 def cmd_stats(a):
-    ledger = a.ledger or default_ledger(default_repo())
-    if not os.path.isfile(ledger):
-        print("0 entries"); return
-    txt = open(ledger).read()
-    print(f"{txt.count('[commit ')} entries, {len(txt)} chars  ({ledger})")
+    repo = a.repo or default_repo()
+    stats = os.path.join(_toplevel(repo), ".claude", "context-ledger.stats.json")
+    if not os.path.isfile(stats):
+        print("0 features recorded"); return
+    s = json.load(open(stats))
+    saved = s.get("saved_tokens", 0)
+    ratio = (s["raw_tokens"] / s["entry_tokens"]) if s.get("entry_tokens") else 0
+    print(f"{s['features']} features  |  ~{saved:,} context tokens saved  "
+          f"(~{s['raw_tokens']:,} raw -> ~{s['entry_tokens']:,} in ledger, {ratio:.0f}x)")
 
 
 def main():
