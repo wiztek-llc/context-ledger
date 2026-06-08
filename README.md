@@ -96,11 +96,17 @@ With the hooks installed, Context Ledger works automatically:
 The CLI works standalone too:
 
 ```bash
+ctxledger doctor                 # is it wired up here? what's recorded? what to do next
 ctxledger record                 # extract HEAD commit → append a ledger entry
 ctxledger show                   # print the project ledger
 ctxledger rehydrate <sha> [path] # recover exact evicted detail from git
-ctxledger stats
+ctxledger stats                  # features recorded · tokens saved · compression
 ```
+
+**"Is it even working?"** Run `ctxledger doctor` in any project — it checks the
+git repo, the installed hooks, and how many features/tokens have been recorded,
+and tells you the next step. The hooks load at **session start**, so if you
+installed them while a session was already open, restart it once.
 
 This is the deployable form of the mechanism the benchmark proves: the ledger
 file is the durable, restorable memory; git is the lossless store.

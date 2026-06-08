@@ -144,6 +144,75 @@ def cmd_rehydrate(a):
     sys.stdout.write(git(repo, "show", ref))
 
 
+def _human(n):
+    if n >= 1_000_000:
+        return f"{n / 1e6:.1f}M"
+    if n >= 1_000:
+        return f"{n / 1e3:.0f}k"
+    return str(int(n))
+
+
+def cmd_doctor(a):
+    import shutil
+    repo = a.repo or default_repo()
+    print("Context Ledger — doctor\n")
+    top = git(repo, "rev-parse", "--show-toplevel").strip()
+    is_git = bool(top)
+    ok = lambda b: "\033[32m ok \033[0m" if b else "\033[31mMISS\033[0m"
+    print(f"  [{ok(is_git)}] git repo            {top or '(this dir is NOT a git repo — nothing to record)'}")
+    cli = shutil.which("ctxledger")
+    print(f"  [{ok(bool(cli))}] ctxledger on PATH   {cli or '(not on PATH)'}")
+
+    settings = os.path.expanduser("~/.claude/settings.json")
+    commit_hook = inject_hook = False
+    try:
+        d = json.load(open(settings))
+        cmds = [h.get("command", "") for ev in ("PostToolUse", "SessionStart")
+                for g in d.get("hooks", {}).get(ev, []) for h in g.get("hooks", [])]
+        commit_hook = any("ledger-commit" in c for c in cmds)
+        inject_hook = any("ledger-inject" in c for c in cmds)
+    except Exception:
+        pass
+    print(f"  [{ok(commit_hook)}] commit hook         records a ledger entry after every `git commit`")
+    print(f"  [{ok(inject_hook)}] session hook        re-injects the ledger at session start")
+
+    ledger = default_ledger(repo)
+    n = open(ledger).read().count("[commit ") if os.path.isfile(ledger) else 0
+    stats = os.path.join(top or repo, ".claude", "context-ledger.stats.json")
+    saved = 0
+    if os.path.isfile(stats):
+        try:
+            saved = json.load(open(stats)).get("saved_tokens", 0)
+        except Exception:
+            pass
+    star = lambda b: "\033[32m ok \033[0m" if b else " ·· "
+    print(f"  [{star(n)}] features recorded   {n}")
+    print(f"  [{star(saved)}] context saved       ~{saved:,} tokens")
+
+    print()
+    head = git(repo, "rev-parse", "--short", "HEAD").strip() if is_git else ""
+    if not is_git:
+        print("  → Not a git repo here, so there's nothing for the ledger to compact.")
+    elif not (commit_hook and inject_hook):
+        print("  → Hooks not installed. Run the project's ./install.sh --with-hooks,")
+        print("    then RESTART this Claude Code session (hooks load at session start).")
+    elif n == 0 and head:
+        print("  → Wired up, but nothing recorded yet. Two ways to see it work NOW:")
+        print("      1) ctxledger record      (captures the current HEAD commit)")
+        print("      2) make your next commit (records automatically)")
+        print("    then:  ctxledger show   /   ctxledger stats")
+    elif n == 0:
+        print("  → Wired up. Make your first commit and it records automatically.")
+    else:
+        print(f"  → Working. {n} features recorded, ~{_human(saved)} tokens saved.")
+        print(f"    Ledger: {ledger}")
+        print(f"    The status line shows '⊟ {_human(saved)} ctx saved' when Claude Code")
+        print(f"    runs in this project (it reads {os.path.relpath(stats, top or repo)}).")
+    if commit_hook:
+        print("\n  Note: hooks load at SESSION START. If you installed them while this")
+        print("  session was already open, restart it once so the commit hook is active.")
+
+
 def cmd_stats(a):
     repo = a.repo or default_repo()
     stats = os.path.join(_toplevel(repo), ".claude", "context-ledger.stats.json")
@@ -159,13 +228,13 @@ def cmd_stats(a):
 def main():
     p = argparse.ArgumentParser(prog="ctxledger")
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name in ("record", "show", "stats"):
+    for name in ("record", "show", "stats", "doctor"):
         s = sub.add_parser(name); s.add_argument("--repo"); s.add_argument("--ledger")
     r = sub.add_parser("rehydrate"); r.add_argument("ref"); r.add_argument("path", nargs="?")
     r.add_argument("--repo"); r.add_argument("--ledger")
     a = p.parse_args()
     {"record": cmd_record, "show": cmd_show, "rehydrate": cmd_rehydrate,
-     "stats": cmd_stats}[a.cmd](a)
+     "stats": cmd_stats, "doctor": cmd_doctor}[a.cmd](a)
 
 
 if __name__ == "__main__":
