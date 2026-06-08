@@ -7,8 +7,9 @@ from cl.session import Session
 from cl.ledger import LedgerEntry
 from cl.strategies import Full, Truncate, Ledger
 from cl import tokens
+from cl.corpus import resolve_repo
 
-REPO = "/Users/tek/Projects/cc-gradient-statusline"
+REPO = resolve_repo()
 ok = True
 
 

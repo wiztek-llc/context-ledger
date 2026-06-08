@@ -13,7 +13,8 @@ from cl.strategies import Full, Truncate, Ledger
 from cl import tokens
 from bench.probes import PROBES
 
-REPO = os.environ.get("CL_REPO", "/Users/tek/Projects/cc-gradient-statusline")
+from cl.corpus import resolve_repo
+REPO = resolve_repo()
 
 
 def line(c="-"):

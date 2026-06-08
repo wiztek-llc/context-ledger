@@ -1,4 +1,5 @@
 .venv/
 __pycache__/
 bench/cache/
+.corpus/
 *.pyc

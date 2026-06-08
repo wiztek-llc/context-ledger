@@ -71,11 +71,50 @@ gotchas live), the public interface signatures touched (what later features
 depend on), the changed-file map, and the rehydrate pointer. Everything else is
 recoverable from git and therefore safe to drop.
 
+## Install
+
+```bash
+git clone https://github.com/wiztek-llc/context-ledger
+cd context-ledger && ./install.sh
+```
+
+Installs the `ctxledger` CLI and (opt-in) the **live Claude Code hooks**. Revert
+with `./uninstall.sh`. Non-interactive: `./install.sh --with-hooks` /
+`--no-hooks` / `--with-bench`.
+
+## Live integration — runs on your real builds
+
+With the hooks installed, Context Ledger works automatically:
+
+- **after every `git commit`** → a compact ledger entry is recorded to
+  `<project>/.claude/context-ledger.md` and injected into context (a
+  `PostToolUse` hook on `git commit`), so the agent knows that feature's build
+  detail is now safe to compact.
+- **at session start** → the ledger is re-injected (a `SessionStart` hook), so
+  the compacted feature memory **survives compaction and new sessions**.
+
+The CLI works standalone too:
+
+```bash
+ctxledger record                 # extract HEAD commit → append a ledger entry
+ctxledger show                   # print the project ledger
+ctxledger rehydrate <sha> [path] # recover exact evicted detail from git
+ctxledger stats
+```
+
+This is the deployable form of the mechanism the benchmark proves: the ledger
+file is the durable, restorable memory; git is the lossless store.
+
 ## Reproduce everything
 
 ```bash
 ./run_all.sh            # venv + tests + scaling + retention benchmark + charts + scoreboard
 ```
+
+The benchmark runs on a **bundled real corpus** (`corpus/statusline.bundle`,
+materialized into `.corpus/` on first run) so the published numbers reproduce
+identically after a fresh clone — no personal paths, no network for the
+deterministic parts. Point at any repo with `CL_REPO=/path/to/repo`.
 
 - **Deterministic** parts (token curves, scaling, compression, rehydration) are
   exact and need no network.

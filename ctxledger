@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""ctxledger — live Context Ledger CLI for Claude Code (dependency-free: git + stdlib).
+
+Commands:
+  ctxledger record   [--repo R] [--ledger F]   extract HEAD commit -> append a ledger entry
+  ctxledger show     [--ledger F]               print the current ledger
+  ctxledger rehydrate <ref> [--repo R]          recover exact detail from git (git show)
+  ctxledger stats    [--ledger F]               entry count / size
+
+The ledger file is the DURABLE, restorable memory: compact structured entries
+(commit message + public interfaces + a git SHA pointer) that survive context
+compaction. Default ledger: $CLAUDE_PROJECT_DIR/.claude/context-ledger.md
+"""
+import argparse
+import os
+import re
+import subprocess
+import sys
+
+_SIG = re.compile(r"^\+\s*((?:def|class|async def)\s+[A-Za-z_]\w*\s*\([^)]*\)"
+                  r"|[A-Z_][A-Z0-9_]+\s*=)", re.M)
+
+
+def git(repo, *args):
+    return subprocess.run(["git", "-C", repo, *args],
+                          capture_output=True, text=True).stdout
+
+
+def default_repo():
+    return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+
+
+def default_ledger(repo):
+    base = os.environ.get("CLAUDE_PROJECT_DIR") or repo
+    return os.path.join(base, ".claude", "context-ledger.md")
+
+
+def interfaces(diff, limit=14):
+    seen, out = set(), []
+    for m in _SIG.finditer(diff):
+        sig = re.sub(r"\s+", " ", m.group(1)).strip().rstrip("=").strip()
+        if sig not in seen:
+            seen.add(sig); out.append(sig)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def entry_for(repo, ref="HEAD"):
+    sha = git(repo, "rev-parse", ref).strip()
+    if not sha:
+        return None
+    subject = git(repo, "show", "-s", "--format=%s", sha).strip()
+    body = git(repo, "show", "-s", "--format=%b", sha).strip()
+    files = [f for f in git(repo, "show", "--name-only", "--format=", sha).split("\n") if f.strip()]
+    diff = git(repo, "show", "--format=", sha)
+    ifaces = "\n".join(f"    - {s}" for s in interfaces(diff)) or "    - (none)"
+    return (
+        f"### {subject}  [commit {sha[:8]}]\n"
+        f"{body}\n"
+        f"  public interfaces:\n{ifaces}\n"
+        f"  files: {', '.join(files)}\n"
+        f"  rehydrate: git show {sha[:8]}  (or {sha[:8]}:<path>)\n"
+    )
+
+
+def cmd_record(a):
+    repo = a.repo or default_repo()
+    ledger = a.ledger or default_ledger(repo)
+    sha = git(repo, "rev-parse", "HEAD").strip()
+    os.makedirs(os.path.dirname(ledger), exist_ok=True)
+    # idempotent: skip if this SHA already recorded
+    if os.path.isfile(ledger) and f"[commit {sha[:8]}]" in open(ledger).read():
+        return
+    e = entry_for(repo)
+    if not e:
+        return
+    header = "" if os.path.isfile(ledger) else (
+        "# Context Ledger\n\nCompacted feature memory. Each entry is the restorable "
+        "record of a committed feature; recover full detail with `git show <sha>`.\n\n")
+    with open(ledger, "a") as f:
+        if header:
+            f.write(header)
+        f.write(e + "\n")
+    sys.stdout.write(e)
+
+
+def cmd_show(a):
+    ledger = a.ledger or default_ledger(default_repo())
+    sys.stdout.write(open(ledger).read() if os.path.isfile(ledger) else "")
+
+
+def cmd_rehydrate(a):
+    repo = a.repo or default_repo()
+    ref = a.ref if not a.path else f"{a.ref}:{a.path}"
+    sys.stdout.write(git(repo, "show", ref))
+
+
+def cmd_stats(a):
+    ledger = a.ledger or default_ledger(default_repo())
+    if not os.path.isfile(ledger):
+        print("0 entries"); return
+    txt = open(ledger).read()
+    print(f"{txt.count('[commit ')} entries, {len(txt)} chars  ({ledger})")
+
+
+def main():
+    p = argparse.ArgumentParser(prog="ctxledger")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    for name in ("record", "show", "stats"):
+        s = sub.add_parser(name); s.add_argument("--repo"); s.add_argument("--ledger")
+    r = sub.add_parser("rehydrate"); r.add_argument("ref"); r.add_argument("path", nargs="?")
+    r.add_argument("--repo"); r.add_argument("--ledger")
+    a = p.parse_args()
+    {"record": cmd_record, "show": cmd_show, "rehydrate": cmd_rehydrate,
+     "stats": cmd_stats}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    main()

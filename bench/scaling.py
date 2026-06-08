@@ -16,7 +16,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from cl.session import Session, Feature
 from cl.strategies import Full, Truncate, Ledger
 
-REPO = os.environ.get("CL_REPO", "/Users/tek/Projects/cc-gradient-statusline")
+from cl.corpus import resolve_repo
+REPO = resolve_repo()
 ART = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "artifacts")
 
 

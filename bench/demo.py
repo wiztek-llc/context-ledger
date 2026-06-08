@@ -9,7 +9,8 @@ from cl.session import Session
 from cl.strategies import Full, Truncate, RollingSummary, Ledger
 from cl import tokens
 
-REPO = os.environ.get("CL_REPO", "/Users/tek/Projects/cc-gradient-statusline")
+from cl.corpus import resolve_repo
+REPO = resolve_repo()
 ART = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "artifacts")
 PROBE = "What RGB color is the dark 'pill' background behind the gradient status bar?"
 FACT = "22, 23, 30"
