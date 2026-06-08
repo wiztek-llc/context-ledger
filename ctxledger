@@ -30,9 +30,14 @@ def default_repo():
     return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 
 
+def _toplevel(d):
+    """git root of d, so the ledger lives at the repo root regardless of which
+    subdirectory the commit ran from. Falls back to d if d isn't in a repo."""
+    return git(d, "rev-parse", "--show-toplevel").strip() or d
+
+
 def default_ledger(repo):
-    base = os.environ.get("CLAUDE_PROJECT_DIR") or repo
-    return os.path.join(base, ".claude", "context-ledger.md")
+    return os.path.join(_toplevel(repo), ".claude", "context-ledger.md")
 
 
 def interfaces(diff, limit=14):
